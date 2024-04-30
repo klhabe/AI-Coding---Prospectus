@@ -1,0 +1,510 @@
+Using code from organ extractor, copied into replit :
+# Install and load necessary packages
+install.packages("imager")
+library(imager)
+
+# Read the image
+image <- load.image("path/to/your/image.jpg")
+
+# Convert the image to grayscale
+gray_image <- grayscale(image)
+
+# Binarize the image using a threshold
+threshold <- 0.5  # You need to adjust this threshold value based on your image
+binary_image <- gray_image > threshold
+
+# Perform object analysis
+object_analysis <- bwlabel(binary_image)
+
+# Get properties of objects
+object_properties <- regionprops(object_analysis)
+
+# Filter objects based on size
+min_size <- 100  # Specify the minimum size of objects you're interested in
+filtered_objects <- object_properties[sapply(object_properties, function(x) x$area > min_size)]
+
+# Display the original image with the identified objects
+plot(image)
+for (obj in filtered_objects) {
+  lines(obj$bbox[c(2, 4, 4, 2, 2)], obj$bbox[c(1, 1, 3, 3, 1)], col = "red")
+}
+
+# Summary of identified objects
+print(filtered_objects)
+
+REPLIT output documented below:
+
+Installing package into ‘/home/runner/AI-coding-Case-study/.config/R’
+(as ‘lib’ is unspecified)
+Warning: dependency ‘Matrix’ is not available
+also installing the dependencies ‘lifecycle’, ‘stringi’, ‘vctrs’, ‘bmp’, ‘tiff’, ‘digest’, ‘pkgconfig’, ‘cpp11’, ‘magrittr’, ‘Rcpp’, ‘stringr’, ‘png’, ‘jpeg’, ‘readbitmap’, ‘purrr’, ‘downloader’, ‘igraph’
+
+trying URL 'http://cran.us.r-project.org/src/contrib/lifecycle_1.0.4.tar.gz'
+Content type 'application/x-gzip' length 107656 bytes (105 KB)
+==================================================
+downloaded 105 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/stringi_1.8.3.tar.gz'
+Content type 'application/x-gzip' length 11917752 bytes (11.4 MB)
+==================================================
+downloaded 11.4 MB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/vctrs_0.6.5.tar.gz'
+Content type 'application/x-gzip' length 969066 bytes (946 KB)
+==================================================
+downloaded 946 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/bmp_0.3.tar.gz'
+Content type 'application/x-gzip' length 111674 bytes (109 KB)
+==================================================
+downloaded 109 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/tiff_0.1-12.tar.gz'
+Content type 'application/x-gzip' length 68272 bytes (66 KB)
+==================================================
+downloaded 66 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/digest_0.6.35.tar.gz'
+Content type 'application/x-gzip' length 230386 bytes (224 KB)
+==================================================
+downloaded 224 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/pkgconfig_2.0.3.tar.gz'
+Content type 'application/x-gzip' length 6080 bytes
+==================================================
+downloaded 6080 bytes
+
+trying URL 'http://cran.us.r-project.org/src/contrib/cpp11_0.4.7.tar.gz'
+Content type 'application/x-gzip' length 285779 bytes (279 KB)
+==================================================
+downloaded 279 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/magrittr_2.0.3.tar.gz'
+Content type 'application/x-gzip' length 267074 bytes (260 KB)
+==================================================
+downloaded 260 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/Rcpp_1.0.12.tar.gz'
+Content type 'application/x-gzip' length 3430494 bytes (3.3 MB)
+==================================================
+downloaded 3.3 MB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/stringr_1.5.1.tar.gz'
+Content type 'application/x-gzip' length 176599 bytes (172 KB)
+==================================================
+downloaded 172 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/png_0.1-8.tar.gz'
+Content type 'application/x-gzip' length 24880 bytes (24 KB)
+==================================================
+downloaded 24 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/jpeg_0.1-10.tar.gz'
+Content type 'application/x-gzip' length 18667 bytes (18 KB)
+==================================================
+downloaded 18 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/readbitmap_0.1.5.tar.gz'
+Content type 'application/x-gzip' length 13516 bytes (13 KB)
+==================================================
+downloaded 13 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/purrr_1.0.2.tar.gz'
+Content type 'application/x-gzip' length 220868 bytes (215 KB)
+==================================================
+downloaded 215 KB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/downloader_0.4.tar.gz'
+Content type 'application/x-gzip' length 6808 bytes
+==================================================
+downloaded 6808 bytes
+
+trying URL 'http://cran.us.r-project.org/src/contrib/igraph_2.0.3.tar.gz'
+Content type 'application/x-gzip' length 4967875 bytes (4.7 MB)
+==================================================
+downloaded 4.7 MB
+
+trying URL 'http://cran.us.r-project.org/src/contrib/imager_1.0.1.tar.gz'
+Content type 'application/x-gzip' length 4509699 bytes (4.3 MB)
+=========================
+downloaded 4.3 MB
+
+* installing *source* package ‘lifecycle’ ...
+** package ‘lifecycle’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (lifecycle)
+ERROR: failed to lock directory ‘/home/runner/AI-coding-Case-study/.config/R’ for modifying
+Try removing ‘/home/runner/AI-coding-Case-study/.config/R/00LOCK-stringi’
+* installing *source* package ‘bmp’ ...
+** package ‘bmp’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (bmp)
+* installing *source* package ‘tiff’ ...
+** package ‘tiff’ successfully unpacked and MD5 sums checked
+** using staged installation
+checking for pkg-config... no
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether the compiler supports GNU C... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to enable C11 features... none needed
+checking for stdio.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for strings.h... yes
+checking for sys/stat.h... yes
+checking for sys/types.h... yes
+checking for unistd.h... yes
+checking for unistd.h... (cached) yes
+checking for TIFFClientOpen in -ltiff... no
+configure: Using libtiff directly doesn't work, falling back to pkg-config.
+configure: Note that you can provide correct PKG_LIBS to allow installation without pkg-config.
+checking for pkg-config... ./configure: line 3384: : command not found
+no
+configure: error: Provided flags don't work and pkg-config is not present.
+You can either set PKG_LIBS to the correct flags or install pkg-config.
+ERROR: configuration failed for package ‘tiff’
+* removing ‘/home/runner/AI-coding-Case-study/.config/R/tiff’
+* installing *source* package ‘digest’ ...
+** package ‘digest’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘gcc (GCC) 12.3.0’
+using C++ compiler: ‘g++ (GCC) 12.3.0’
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c SpookyV2.cpp -o SpookyV2.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c aes.c -o aes.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c blake3.c -o blake3.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c blake3_dispatch.c -o blake3_dispatch.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c blake3_portable.c -o blake3_portable.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c crc32.c -o crc32.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c crc32c.cpp -o crc32c.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c crc32c_portable.cpp -o crc32c_portable.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c digest.c -o digest.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c digest2int.c -o digest2int.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c init.c -o init.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c md5.c -o md5.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c pmurhash.c -o pmurhash.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c raes.c -o raes.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c sha1.c -o sha1.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c sha2.c -o sha2.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c sha256.c -o sha256.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c spooky_serialize.cpp -o spooky_serialize.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I.      -fpic  -g -O2  -c xxhash.c -o xxhash.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -shared -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -o digest.so SpookyV2.o aes.o blake3.o blake3_dispatch.o blake3_portable.o crc32.o crc32c.o crc32c_portable.o digest.o digest2int.o init.o md5.o pmurhash.o raes.o sha1.o sha2.o sha256.o spooky_serialize.o xxhash.o -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -lR
+installing to /home/runner/AI-coding-Case-study/.config/R/00LOCK-digest/00new/digest/libs
+** R
+** demo
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (digest)
+* installing *source* package ‘pkgconfig’ ...
+** package ‘pkgconfig’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (pkgconfig)
+* installing *source* package ‘cpp11’ ...
+** package ‘cpp11’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (cpp11)
+* installing *source* package ‘magrittr’ ...
+** package ‘magrittr’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘gcc (GCC) 12.3.0’
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG       -fpic  -g -O2  -c pipe.c -o pipe.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG       -fpic  -g -O2  -c utils.c -o utils.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -shared -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -o magrittr.so pipe.o utils.o -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -lR
+installing to /home/runner/AI-coding-Case-study/.config/R/00LOCK-magrittr/00new/magrittr/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (magrittr)
+* installing *source* package ‘Rcpp’ ...
+** package ‘Rcpp’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C++ compiler: ‘g++ (GCC) 12.3.0’
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I../inst/include/      -fpic  -g -O2  -c api.cpp -o api.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I../inst/include/      -fpic  -g -O2  -c attributes.cpp -o attributes.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I../inst/include/      -fpic  -g -O2  -c barrier.cpp -o barrier.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I../inst/include/      -fpic  -g -O2  -c date.cpp -o date.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I../inst/include/      -fpic  -g -O2  -c module.cpp -o module.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I../inst/include/      -fpic  -g -O2  -c rcpp_init.cpp -o rcpp_init.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/c++ -std=gnu++17 -shared -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -o Rcpp.so api.o attributes.o barrier.o date.o module.o rcpp_init.o -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -lR
+installing to /home/runner/AI-coding-Case-study/.config/R/00LOCK-Rcpp/00new/Rcpp/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+code for methods in class “C++OverloadedMethods” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “RcppClass” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+code for methods in class “RcppClass” was not checked for suspicious field assignments (recommended package ‘codetools’ not available?)
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (Rcpp)
+* installing *source* package ‘png’ ...
+** package ‘png’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘gcc (GCC) 12.3.0’
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG       `libpng-config --cflags` -fpic  -g -O2  -c dummy.c -o dummy.o
+/nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15/bin/bash: line 1: libpng-config: command not found
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG       `libpng-config --cflags` -fpic  -g -O2  -c read.c -o read.o
+/nix/store/q1c2flcykgr4wwg5a6h450hxbk4ch589-bash-5.2-p15/bin/bash: line 1: libpng-config: command not found
+read.c:3:10: fatal error: png.h: No such file or directory
+    3 | #include <png.h>
+      |          ^~~~~~~
+compilation terminated.
+make: *** [/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/etc/Makeconf:191: read.o] Error 1
+ERROR: compilation failed for package ‘png’
+* removing ‘/home/runner/AI-coding-Case-study/.config/R/png’
+* installing *source* package ‘jpeg’ ...
+** package ‘jpeg’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘gcc (GCC) 12.3.0’
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG       -fpic  -g -O2  -c read.c -o read.o
+In file included from read.c:1:
+rjcommon.h:11:10: fatal error: jpeglib.h: No such file or directory
+   11 | #include <jpeglib.h>
+      |          ^~~~~~~~~~~
+compilation terminated.
+make: *** [/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/etc/Makeconf:191: read.o] Error 1
+ERROR: compilation failed for package ‘jpeg’
+* removing ‘/home/runner/AI-coding-Case-study/.config/R/jpeg’
+* installing *source* package ‘vctrs’ ...
+** package ‘vctrs’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘gcc (GCC) 12.3.0’
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c altrep-lazy-character.c -o altrep-lazy-character.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c altrep-rle.c -o altrep-rle.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c altrep.c -o altrep.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c arg-counter.c -o arg-counter.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c arg.c -o arg.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c assert.c -o assert.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c bind.c -o bind.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c c-unchop.c -o c-unchop.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c c.c -o c.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c callables.c -o callables.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c cast-bare.c -o cast-bare.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c cast-dispatch.c -o cast-dispatch.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c cast.c -o cast.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c compare.c -o compare.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c complete.c -o complete.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c conditions.c -o conditions.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c dictionary.c -o dictionary.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c dim.c -o dim.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c empty.c -o empty.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c equal.c -o equal.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c expand.c -o expand.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c fields.c -o fields.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c fill.c -o fill.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c globals.c -o globals.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c group.c -o group.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c growable.c -o growable.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c hash.c -o hash.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c init.c -o init.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c interval.c -o interval.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c match-joint.c -o match-joint.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c match.c -o match.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c missing.c -o missing.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c names.c -o names.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c order-collate.c -o order-collate.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c order-groups.c -o order-groups.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c order-sortedness.c -o order-sortedness.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c order-truelength.c -o order-truelength.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c order.c -o order.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c poly-op.c -o poly-op.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c proxy-restore.c -o proxy-restore.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c proxy.c -o proxy.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c ptype-common.c -o ptype-common.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c ptype.c -o ptype.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c ptype2-dispatch.c -o ptype2-dispatch.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c ptype2.c -o ptype2.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c rank.c -o rank.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c rep.c -o rep.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c rlang-dev.c -o rlang-dev.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c rlang.c -o rlang.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c runs.c -o runs.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c set.c -o set.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c shape.c -o shape.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c size-common.c -o size-common.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c size.c -o size.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c slice-array.c -o slice-array.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c slice-assign-array.c -o slice-assign-array.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c slice-assign.c -o slice-assign.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c slice-chop.c -o slice-chop.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c slice-interleave.c -o slice-interleave.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c slice.c -o slice.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c split.c -o split.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c subscript-loc.c -o subscript-loc.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c subscript.c -o subscript.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c translate.c -o translate.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c type-data-frame.c -o type-data-frame.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c type-date-time.c -o type-date-time.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c type-factor.c -o type-factor.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c type-info.c -o type-info.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c type-integer64.c -o type-integer64.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c type-tibble.c -o type-tibble.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c typeof2-s3.c -o typeof2-s3.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c typeof2.c -o typeof2.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c unspecified.c -o unspecified.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c utils-dispatch.c -o utils-dispatch.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c utils.c -o utils.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c vctrs-core.c -o vctrs-core.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG -I./rlang     -fvisibility=hidden -fpic  -g -O2  -c version.c -o version.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -shared -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -o vctrs.so altrep-lazy-character.o altrep-rle.o altrep.o arg-counter.o arg.o assert.o bind.o c-unchop.o c.o callables.o cast-bare.o cast-dispatch.o cast.o compare.o complete.o conditions.o dictionary.o dim.o empty.o equal.o expand.o fields.o fill.o globals.o group.o growable.o hash.o init.o interval.o match-joint.o match.o missing.o names.o order-collate.o order-groups.o order-sortedness.o order-truelength.o order.o poly-op.o proxy-restore.o proxy.o ptype-common.o ptype.o ptype2-dispatch.o ptype2.o rank.o rep.o rlang-dev.o rlang.o runs.o set.o shape.o size-common.o size.o slice-array.o slice-assign-array.o slice-assign.o slice-chop.o slice-interleave.o slice.o split.o subscript-loc.o subscript.o translate.o type-data-frame.o type-date-time.o type-factor.o type-info.o type-integer64.o type-tibble.o typeof2-s3.o typeof2.o unspecified.o utils-dispatch.o utils.o vctrs-core.o version.o -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -lR
+installing to /home/runner/AI-coding-Case-study/.config/R/00LOCK-vctrs/00new/vctrs/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (vctrs)
+ERROR: dependencies ‘jpeg’, ‘png’, ‘tiff’ are not available for package ‘readbitmap’
+* removing ‘/home/runner/AI-coding-Case-study/.config/R/readbitmap’
+* installing *source* package ‘downloader’ ...
+** package ‘downloader’ successfully unpacked and MD5 sums checked
+** using staged installation
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (downloader)
+ERROR: dependency ‘stringi’ is not available for package ‘stringr’
+* removing ‘/home/runner/AI-coding-Case-study/.config/R/stringr’
+* installing *source* package ‘purrr’ ...
+** package ‘purrr’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘gcc (GCC) 12.3.0’
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c backports.c -o backports.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c cleancall.c -o cleancall.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c coerce.c -o coerce.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c conditions.c -o conditions.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c flatten.c -o flatten.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c init.c -o init.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c map.c -o map.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c pluck.c -o pluck.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c transpose.c -o transpose.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -I"/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/include" -DNDEBUG  -I'/home/runner/AI-coding-Case-study/.config/R/cli/include'    -fvisibility=hidden -fpic  -g -O2  -c utils.c -o utils.o
+/nix/store/90h6k8ylkgn81k10190v5c9ldyjpzgl9-gcc-wrapper-12.3.0/bin/cc -shared -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -o purrr.so backports.o cleancall.o coerce.o conditions.o flatten.o init.o map.o pluck.o transpose.o utils.o -L/nix/store/x71ipz9k2zgqj955f8r40hiw7blbawp7-R-4.3.2/lib/R/lib -lR
+installing to /home/runner/AI-coding-Case-study/.config/R/00LOCK-purrr/00new/purrr/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (purrr)
+ERROR: dependency ‘Matrix’ is not available for package ‘igraph’
+* removing ‘/home/runner/AI-coding-Case-study/.config/R/igraph’
+ERROR: dependencies ‘stringr’, ‘png’, ‘jpeg’, ‘readbitmap’, ‘igraph’ are not available for package ‘imager’
+* removing ‘/home/runner/AI-coding-Case-study/.config/R/imager’
+
+The downloaded source packages are in
+    ‘/tmp/RtmpMBwCRm/downloaded_packages’
+Warning messages:
+1: In install.packages("imager") :
+  installation of package ‘stringi’ had non-zero exit status
+2: In install.packages("imager") :
+  installation of package ‘tiff’ had non-zero exit status
+3: In install.packages("imager") :
+  installation of package ‘png’ had non-zero exit status
+4: In install.packages("imager") :
+  installation of package ‘jpeg’ had non-zero exit status
+5: In install.packages("imager") :
+  installation of package ‘readbitmap’ had non-zero exit status
+6: In install.packages("imager") :
+  installation of package ‘stringr’ had non-zero exit status
+7: In install.packages("imager") :
+  installation of package ‘igraph’ had non-zero exit status
+8: In install.packages("imager") :
+  installation of package ‘imager’ had non-zero exit status
+Error in library(imager) : there is no package called ‘imager’
+Execution halted
