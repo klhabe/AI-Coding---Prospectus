@@ -1,0 +1,502 @@
+Working Code:
+# OrgaExtractor code (converted from Python)
+
+# Define softmax_helper function
+softmax_helper <- function(x) {
+  return(softmax(x, 1))
+}
+
+# Define sum_tensor function
+sum_tensor <- function(inp, axes, keepdim=FALSE) {
+  axes <- unique(axes)
+  if (keepdim) {
+    for (ax in axes) {
+      inp <- apply(inp, ax, sum, keepdims=TRUE)
+    }
+  } else {
+    for (ax in rev(sort(axes))) {
+      inp <- apply(inp, ax, sum)
+    }
+  }
+  return(inp)
+}
+
+# Define get_tp_fp_fn_tn function
+get_tp_fp_fn_tn <- function(net_output, gt, axes=NULL, mask=NULL, square=FALSE) {
+  shp_x <- dim(net_output)
+  shp_y <- dim(gt)
+  
+  if (length(shp_x) != length(shp_y)) {
+    gt <- array(gt, dim=c(shp_y[1], 1, shp_y[-1]))
+  }
+  
+  if (all(shp_x == shp_y)) {
+    y_onehot <- gt
+  } else {
+    gt <- as.integer(gt)
+    y_onehot <- array(0, dim=shp_x)
+    for (i in 1:shp_x[1]) {
+      y_onehot[i,,,] <- ifelse(gt[i,,,] == 1, 1, 0)
+    }
+  }
+  
+  tp <- net_output * y_onehot
+  fp <- net_output * (1 - y_onehot)
+  fn <- (1 - net_output) * y_onehot
+  tn <- (1 - net_output) * (1 - y_onehot)
+  
+  if (!is.null(mask)) {
+    tp <- tp * mask
+    fp <- fp * mask
+    fn <- fn * mask
+    tn <- tn * mask
+  }
+  
+  if (square) {
+    tp <- tp ^ 2
+    fp <- fp ^ 2
+    fn <- fn ^ 2
+    tn <- tn ^ 2
+  }
+  
+  if (length(axes) > 0) {
+    tp <- sum_tensor(tp, axes, keepdim=FALSE)
+    fp <- sum_tensor(fp, axes, keepdim=FALSE)
+    fn <- sum_tensor(fn, axes, keepdim=FALSE)
+    tn <- sum_tensor(tn, axes, keepdim=FALSE)
+  }
+  
+  return(list(tp=tp, fp=fp, fn=fn, tn=tn))
+}
+
+# Define SoftDiceLoss class
+SoftDiceLoss <- function(apply_nonlin=NULL, batch_dice=FALSE, do_bg=TRUE, smooth=1) {
+  return(structure(list(apply_nonlin=apply_nonlin, batch_dice=batch_dice, do_bg=do_bg, smooth=smooth), class="SoftDiceLoss"))
+}
+
+# Define forward method for SoftDiceLoss
+forward.SoftDiceLoss <- function(self, x, y, loss_mask=NULL) {
+  shp_x <- dim(x)
+  
+  if (self$batch_dice) {
+    axes <- c(1, 3:length(shp_x))
+  } else {
+    axes <- c(2:length(shp_x))
+  }
+  
+  if (!is.null(self$apply_nonlin)) {
+    x <- self$apply_nonlin(x)
+  }
+  
+  tf <- get_tp_fp_fn_tn(x, y, axes, loss_mask, FALSE)
+  tp <- tf$tp
+  fp <- tf$fp
+  fn <- tf$fn
+  
+  nominator <- 2 * tp + self$smooth
+  denominator <- 2 * tp + fp + fn + self$smooth
+  
+  dc <- nominator / (denominator + 1e-8)
+  
+  if (!self$do_bg) {
+    if (self$batch_dice) {
+      dc <- dc[-1,]
+    } else {
+      dc <- dc[,-1]
+    }
+  }
+  dc <- mean(dc)
+  
+  return(-dc)
+}
+
+# Define DC_and_BCE_loss class
+DC_and_BCE_loss <- function(soft_dice_kwargs, ce_kwargs, aggregate="sum", square_dice=FALSE, weight_ce=1, weight_dice=1,
+                            log_dice=FALSE, ignore_label=NULL) {
+  ce_kwargs$reduction <- "none"
+  return(structure(list(soft_dice_kwargs=soft_dice_kwargs, ce_kwargs=ce_kwargs, aggregate=aggregate, square_dice=square_dice,
+                        weight_ce=weight_ce, weight_dice=weight_dice, log_dice=log_dice, ignore_label=ignore_label), class="DC_and_BCE_loss"))
+}
+
+# Define forward method for DC_and_BCE_loss
+forward.DC_and_BCE_loss <- function(self, net_output, target) {
+  if (!is.null(self$ignore_label)) {
+    mask <- target != self$ignore_label
+    target <- replace(target, !mask, 0)
+  } else {
+    mask <- NULL
+  }
+  
+  dc_loss <- forward.SoftDiceLoss(net_output, target, loss_mask=mask) * ifelse(self$weight_dice != 0, 1, 0)
+  if (self$log_dice) {
+    dc_loss <- -log(-dc_loss)
+  }
+  
+  ce_loss <- nn.BCEWithLogitsLoss(net_output, target) * ifelse(self$weight_ce != 0, 1, 0)
+  if (!is.null(self$ignore_label)) {
+    ce_loss <- ce_loss * mask
+    ce_loss <- sum(ce_loss) / sum(mask)
+  }
+  
+  if (self$aggregate == "sum") {
+    result <- self$weight_ce * ce_loss + self$weight_dice * dc_loss
+  } else {
+    stop("nah son")
+  }
+  return(result)
+}
+
+# Main code starts here
+library(jpeg)
+
+# Function to select a JPG file
+select_jpg_file <- function() {
+  # Ask user to select a JPG file
+  cat("Please select a JPG file:\n")
+  file_path <- file.choose()
+  return(file_path)
+}
+
+# Function to process the selected JPG file
+process_jpg_file <- function(file_path) {
+  # Read the JPG file
+  img <- readJPEG(file_path)
+  
+  # Display image dimensions
+  cat("Image dimensions:", dim(img), "\n")
+  
+  # Display minimum and maximum pixel values
+  cat("Minimum pixel value:", min(img), "\n")
+  cat("Maximum pixel value:", max(img), "\n")
+  
+  # Display the image
+  plot(0, 0, type = "n", xlim = c(0, 1), ylim = c(0, 1), xlab = "", ylab = "")
+  rasterImage(img, 0, 0, 1, 1)
+}
+
+# Step 1: Ask user to select a JPG file
+file_path <- select_jpg_file()
+
+# Step 2: Process the selected JPG file
+process_jpg_file(file_path)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Script in Progress
+
+Code 2:
+# Requirements
+library(argparse)
+library(reticulate)
+library(tidyverse)
+library(torch)
+library(torchvision)
+library(data.table)
+library(openxlsx)
+#library(medpy)
+library(imager)
+#library(reticulate)
+medpy <- import("medpy")
+library(R6)
+
+# Data path and result directory
+data_path <- "/content/test"
+result_dir <- "/content/result"
+
+# Model Definition
+Residual_block_3 <- R6Class(
+  "Residual_block_3",
+  inherit = nn_Module,
+  public = list(
+    initialize = function(in_channels, out_channels) {
+      super$initialize()
+      layers <- list(
+        nn_Conv2d(in_channels = in_channels, out_channels = out_channels, 
+                  kernel_size = 3, stride = 1, padding = 1, bias = TRUE),
+        nn_InstanceNorm2d(num_features = out_channels),
+        nn_ReLU(),
+        nn_Conv2d(in_channels = out_channels, out_channels = out_channels, 
+                  kernel_size = 3, stride = 1, padding = 1, bias = TRUE),
+        nn_InstanceNorm2d(num_features = out_channels),
+        nn_ReLU()
+      )
+      self$conv <- nn_Sequential(layers)
+      
+      skips <- list(
+        nn_Conv2d(in_channels = in_channels, out_channels = out_channels, 
+                  kernel_size = 3, stride = 1, padding = 1, bias = TRUE),
+        nn_InstanceNorm2d(num_features = out_channels)
+      )
+      self$skip <- nn_Sequential(skips)
+    },
+    forward = function(x) {
+      x <- self$conv(x) + self$skip(x)
+      return(x)
+    }
+  )
+)
+
+Residual_block_7 <- R6Class(
+  "Residual_block_7",
+  inherit = nn_Module,
+  public = list(
+    initialize = function(in_channels, out_channels) {
+      super$initialize()
+      layers <- list(
+        nn_Conv2d(in_channels = in_channels, out_channels = out_channels, 
+                  kernel_size = 7, stride = 1, padding = 3, bias = TRUE),
+        nn_InstanceNorm2d(num_features = out_channels),
+        nn_ReLU(),
+        nn_Conv2d(in_channels = out_channels, out_channels = out_channels, 
+                  kernel_size = 7, stride = 1, padding = 3, bias = TRUE),
+        nn_InstanceNorm2d(num_features = out_channels),
+        nn_ReLU()
+      )
+      self$conv <- nn_Sequential(layers)
+      
+      skips <- list(
+        nn_Conv2d(in_channels = in_channels, out_channels = out_channels, 
+                  kernel_size = 7, stride = 1, padding = 3, bias = TRUE),
+        nn_InstanceNorm2d(num_features = out_channels)
+      )
+      self$skip <- nn_Sequential(skips)
+    },
+    forward = function(x) {
+      x <- self$conv(x) + self$skip(x)
+      return(x)
+    }
+  )
+)
+
+Residual_block <- R6Class(
+  "Residual_block",
+  inherit = nn_Module,
+  public = list(
+    initialize = function(in_channels, out_channels) {
+      super$initialize()
+      self$x3 <- Residual_block_3$new(in_channels, out_channels)
+      self$x7 <- Residual_block_7$new(in_channels, out_channels)
+      self$conv <- nn_Conv2d(out_channels * 2, out_channels, 
+                             kernel_size = 1, stride = 1, padding = 0, bias = TRUE)
+    },
+    forward = function(x) {
+      x3 <- self$x3$forward(x)
+      x7 <- self$x7$forward(x)
+      x <- torch_cat(list(x3, x7), dim = 1)
+      x <- self$conv(x)
+      return(x)
+    }
+  )
+)
+
+ResUNet_MS <- R6Class(
+  "ResUNet_MS",
+  inherit = nn_Module,
+  public = list(
+    initialize = function() {
+      super$initialize()
+      self$pool <- nn_MaxPool2d(kernel_size = 2)
+      
+      self$enc1_1 <- Residual_block$new(in_channels = 1, out_channels = 64)
+      self$enc2_1 <- Residual_block$new(in_channels = 64, out_channels = 128)
+      self$enc3_1 <- Residual_block$new(in_channels = 128, out_channels = 256)
+      self$enc4_1 <- Residual_block$new(in_channels = 256, out_channels = 512)
+      self$enc5_1 <- Residual_block$new(in_channels = 512, out_channels = 1024)
+      
+      self$unpool5 <- nn_ConvTranspose2d(in_channels = 1024, out_channels = 512,
+                                         kernel_size = 2, stride = 2, padding = 0, bias = TRUE)
+      self$dec5_1 <- Residual_block$new(in_channels = 1024, out_channels = 512)
+      
+      self$unpool4 <- nn_ConvTranspose2d(in_channels = 512, out_channels = 256,
+                                         kernel_size = 2, stride = 2, padding = 0, bias = TRUE)
+      self$dec4_1 <- Residual_block$new(in_channels = 512, out_channels = 256)
+      
+      self$unpool3 <- nn_ConvTranspose2d(in_channels = 256, out_channels = 128,
+                                         kernel_size = 2, stride = 2, padding = 0, bias = TRUE)
+      self$dec3_1 <- Residual_block$new(in_channels = 256, out_channels = 128)
+      
+      self$unpool2 <- nn_ConvTranspose2d(in_channels = 128, out_channels = 64,
+                                         kernel_size = 2, stride = 2, padding = 0, bias = TRUE)
+      self$dec2_1 <- Residual_block$new(in_channels = 128, out_channels = 64)
+      
+      self$fc <- nn_Conv2d(in_channels = 64, out_channels = 1, 
+                           kernel_size = 1, stride = 1, padding = 0, bias = TRUE)
+    },
+    forward = function(x) {
+      enc1_1 <- self$enc1_1$forward(x)
+      pool2 <- self$pool$forward(enc1_1)
+      enc2_1 <- self$enc2_1$forward(pool2)
+      pool3 <- self$pool$forward(enc2_1)
+      enc3_1 <- self$enc3_1$forward(pool3)
+      pool4 <- self$pool$forward(enc3_1)
+      enc4_1 <- self$enc4_1$forward(pool4)
+      pool5 <- self$pool$forward(enc4_1)
+      enc5_1 <- self$enc5_1$forward(pool5)
+      
+      unpool5 <- self$unpool5$forward(enc5_1)
+      cat5 <- torch_cat(list(unpool5, enc4_1), dim = 1)
+      dec5_1 <- self$dec5_1$forward(cat5)
+      
+      unpool4 <- self$unpool4$forward(dec5_1)
+      cat4 <- torch_cat(list(unpool4, enc3_1), dim = 1)
+      dec4_1 <- self$dec4_1$forward(cat4)
+      
+      unpool3 <- self$unpool3$forward(dec4_1)
+      cat3 <- torch_cat(list(unpool3, enc2_1), dim = 1)
+      dec3_1 <- self$dec3_1$forward(cat3)
+      
+      unpool2 <- self$unpool2$forward(dec3_1)
+      cat2 <- torch_cat(list(unpool2, enc1_1), dim = 1)
+      dec2_1 <- self$dec2_1$forward(cat2)
+      
+      x <- self$fc$forward(dec2_1)
+      
+      return(x)
+    }
+  )
+)
+
+# Data Transformation
+test_transform <- function(image) {
+  image <- TF$to_tensor(image)
+  image <- TF$normalize(image, 0.5, 0.5)
+  return(image)
+}
+
+# Dataset Class
+Dataset <- R6Class(
+  "Dataset",
+  inherit = torch$utils$data$Dataset,
+  public = list(
+    initialize = function(data_dir) {
+      self$data_dir <- data_dir
+      lst_data <- list.files(self$data_dir)
+      lst_input <- lst_data[str_detect(lst_data, '^input')]
+      lst_input <- sort(lst_input)
+      self$lst_input <- lst_input
+    },
+    `__len__` = function() {
+      return(length(self$lst_input))
+    },
+    test_transform = test_transform,
+    `__getitem__` = function(index) {
+      p <- file.path(self$data_dir, self$lst_input[[index]])
+      if (grepl("npy$", p)) {
+        input <- np$load(p)
+      } else {
+        input <- imager::load.image(file.path(self$data_dir, self$lst_input[[index]]))
+        input <- imager::grayscale(input)
+      }
+      input <- input / 255.0
+      if (dim(input) == 2) {
+        input <- array(input, dim = c(dim(input), 1))
+      }
+      input <- self$test_transform(input)
+      return(input)
+    }
+  )
+)
+
+
+# Post-processing Functions
+draw_contour <- function(args) {
+  kernel <- imager::as.cimg(imager::circle(7))
+  pred <- args / 255
+  pred[1090:1400 ] <- 0
+  o <- as.integer(pred)
+  contours <- imager::contours(as.cimg(o), levels = 0)
+  r <- imager::fill(as.cimg(o), contours)
+  o <- as.integer(r)
+  contours <- imager::contours(as.cimg(o), levels = 0)
+  return(list(img_contour = o, contours = contours, pp = r))
+}
+
+analysis <- function(img_contour, contours) {
+  info <- list()
+  c_im <- img_contour
+  for (i in seq_along(contours)) {
+    M <- imager::moments(as.cimg(contours[[i]]))
+    area <- M$m00
+    if (area == 0) next
+    cX <- as.integer(M$m10 / M$m00)
+    cY <- as.integer(M$m01 / M$m00)
+    radius <- sqrt(area / pi)
+    majorAxisLength <- 2 * radius
+    minorAxisLength <- 2 * radius
+    Eccentricity <- 1
+    Perimeter <- sum(imager::contour.length(contours[[i]]))
+    cv2$putText(c_im, as.character(i + 1), c(cX, cY), fontface = 1, fontscale = 0.5, color = "white", thickness = 1, lineType = 4)
+    tmp <- list(
+      Area = area,
+      Diameter = 2 * radius,
+      majorAxisLength = round(majorAxisLength, 2),
+      minorAxisLength = round(minorAxisLength, 2),
+      Eccentricity = Eccentricity,
+      Perimeter = round(Perimeter, 2)
+    )
+    info[[i + 1]] <- tmp
+  }
+  return(list(info = info, c_im = c_im))
+}
+
+# Parameter Definition
+device <- "cuda"
+torch::torch_save(file.choose(),"orgaextractor.pth")
+pretrained_model <- torch::torch_load("orgaextractor.pth")
+model <- ResUNet_MS$new()
+model$load_state_dict(pretrained_model)
+model$to(device)
+model <- nn_DataParallel(module = model)
+batch_size <- 2
+
+fn_tonumpy <- function(x) {
+  return(x$to("cpu")$detach()$numpy()$transpose(0, 2, 3, 1))
+}
+
+fn_denorm <- function(x, mean, std) {
+  return((x * std) + mean)
+}
+
+fn_class <- function(x) {
+  return(1.0 * (x > 0.5))
+}
+
+# Data Loader
+dataset_test <- Dataset$new(data_dir = data_path)
+loader_test <- torch$utils$data$DataLoader(dataset_test, batch_size = batch_size, shuffle = FALSE)
+num_data_test <- length(dataset_test)
+num_batch_test <- ceiling(num_data_test / batch_size)
+
+# Inference
+for (data in loader_test) {
+  input <- data$to(device, dtype = torch$float)
+  with(torch$no_grad(), {
+    output <- model(input)
+  })
+  input <- fn_tonumpy(fn_denorm(input, mean = 0.5, std = 0.5))
+  output <- fn_tonumpy(fn_class(output))
+  for (j in seq_len(dim(input)[1])) {
+    id <- batch_size * (batch - 1) + j
+    imager::save.image(input[j, , , 1], file.path(result_dir, "png", paste0("input_", id, ".png")), type = "png")
+    imager::save.image(output[j, , , 1], file.path(result_dir, "png", paste0("output_", id, ".png")), type = "png")
+    o <- imager::load.image(file.path(result_dir, "png", paste0("output_", id, ".png")))
+    contours <- draw_contour(o)
+    analysis_info <- analysis(contours$img_contour, contours$contours)
+    df <- as.data.frame(do.call(rbind, analysis_info$info))
+    openxlsx::write.xlsx(df, file.path(result_dir, "analysis.xlsx"), sheetName = paste0("contour_", id))
+    imager::save.image(contours$img_contour, file.path(result_dir, "png", paste0("contour_", id, ".png")), type = "png")
+    imager::save.image(contours$pp, file.path(result_dir, "png", paste0("pp_", id, ".png")), type = "png")
+  }
+}
